@@ -7,12 +7,12 @@ from django.db.models import Sum
 
 def indice(requisicao):
     if requisicao.method == 'POST':
-        # verificar se já existe um usuário com o EMAIL
+        # Verificar se já existe um usuário com o EMAIL
         email = requisicao.POST['email']
         try:
             aluno = Aluno.objects.get(email=email)
         except Aluno.DoesNotExist:
-            # VALIDAR O FORMULARIO E SALVAR NO DB
+            # Cadastrar o aluno novo
             form = AlunoForm(requisicao.POST)
             if form.is_valid():
                 aluno = form.save()
@@ -22,6 +22,10 @@ def indice(requisicao):
             return render(requisicao, 'quiz/indice.html', contexto)
         else:
             requisicao.session['aluno_id'] = aluno.id
+            aluno_id = requisicao.session['aluno_id']
+            # Verificar se já respondeu alguma pergunta
+            if Resposta.objects.filter(aluno_id=aluno_id):
+                return redirect('/classificacao')
             return redirect('/perguntas/1')
     else:
         # se não for validado
