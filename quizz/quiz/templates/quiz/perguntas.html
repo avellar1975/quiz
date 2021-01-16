@@ -18,14 +18,19 @@
 
                 <div id="game" class="justify-center flex-column animate-bottom hidden">
 
+
                     <h2>Questão {{ id_pergunta }}</h2>
                     <h3>{{ pergunta.enunciado }}</h3>
 
                     {% for i in pergunta.alternativas.array %}
-                    <div class="choice-container">
-                        <p class="choice-prefix">{% cycle 'A' 'B' 'C' 'D' %}</p>
-                        <p class="choice-text">{{ i }}</p>
+                    <form action="/perguntas/{{ id_pergunta }}" method="post">
+                      <div class="choice-container">
+                        {% csrf_token %}
+                        <input type="hidden" name="alternativa" value="{{ forloop.counter0 }}" />
+                        <button type="submit" class="choice-prefix">{% cycle 'A' 'B' 'C' 'D' %}</button>
+                        <button type="submit" class="choice-text {% if alternativa_escolhida ==  forloop.counter0 %} incorrect {% endif %}">{{ i }}</button>
                     </div>
+                    </form>
                     {% endfor %}
                 </div>
 
